@@ -20,6 +20,9 @@ app.use('/api/books', book);
 app.use(error404);
 
 const PORT = process.env.PORT || 3000;
+const REDIS_URL = process.env.REDIS_URL || "localhost";
+
+
 app.listen(PORT);
 
 console.log(`Сервер запущен на http://localhost:${PORT}`)
