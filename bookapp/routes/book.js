@@ -38,11 +38,15 @@ router.post('/create', fileMulter.single('fileBook'), (req, res) => {
 });
 
 // view — информация по конкретной книге;
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { books } = store;
   const { id } = req.params;
   const idx = books.findIndex((el) => el.id === id);
   if (idx !== -1) {
+
+    const response = await counter.fetch(`/counter/${id}/incr`, "POST");
+		res.render("books/view", { book: books[index], count: response.counter });
+
     res.render('books/view', {
       title: `Книга | ${books[idx].title}`,
       book: books[idx],

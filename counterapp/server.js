@@ -13,14 +13,25 @@ const client = redis.createClient({url: REDIS_URL});
 } ) ();
 
 
-
-app.get("/:name", async (req, res) => {
-
-    const { name } = req.params;
-
+app.post('/counter/:bookId/incr', async(req, res) => {
+    
+    const { bookId } = req.params; 
     try {
-        const cnt = await client.incr(name);
-        res.json( {message: `Hello ${name}`, cnt});
+        const cnt = await client.incr(bookId);
+        res.status(200);
+        res.json({message: `${bookId}`, cnt});
+    } catch (e) {
+        res.json({errcode: 500, errmsg: `Ошибка counter ${e}`});
+    }
+});
+
+app.get("/counter/:bookId", async (req, res) => {
+
+    const { bookId } = req.params;
+    try {
+        const cnt = await client.get(bookId);
+        res.status(200);
+        res.json({message: `${bookId}`, cnt});
     } catch (e) {
         res.json({ errcode: 500, errmsg: `Ошибка counter ${e}`});
     }
