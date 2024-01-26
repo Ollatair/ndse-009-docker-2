@@ -2,8 +2,8 @@ services:
   storage:
     image: redis
     volumes:
-      - ./data:/data
-  counter:
+      - ./data:/data 
+  counterapp:
     image: ollatair/counterapp:v1.0.0
     ports: 
       - 3002:3002
@@ -11,12 +11,14 @@ services:
       - PORTS=3002
       - REDIS_URL=redis://storage
     depends_on:
-      - storage
+      - storage 
   bookapp:
     image: ollatair/book:v1.0.0
     ports: 
       - 3000:3000
     environment:
       - PORTS=3000
+      - CNT_PORT=3002
+      - REDIS_URL=redis://storage
     depends_on:
-      - counter
+      - counterapp

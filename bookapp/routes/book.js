@@ -5,6 +5,9 @@ const fileMulter = require('../middleware/file');
 const store = require('../middleware/store');
 const Book = require('../models/book');
 
+const PORT = process.env.CNT_PORT || 3002;
+const BASE_URL = process.env.BASE_URL || "http://counterapp";
+
 // index — просмотр списка всех книг (вывод заголовков);
 router.get('/', (req, res) => {
   const { books } = store;
@@ -43,13 +46,24 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const idx = books.findIndex((el) => el.id === id);
   if (idx !== -1) {
-
-    const response = await counter.fetch(`/counter/${id}/incr`, "POST");
-		res.render("books/view", { book: books[index], count: response.counter });
-
+    let cnt = 0;
+    try {
+      const response = await fetch(`${BASE_URL}:${PORT}/counter/${id}/incr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }); 
+      const data = await response.json();
+      cnt = data.cnt; 
+    } catch (error) {
+      console.log(error);
+    }
+ 
     res.render('books/view', {
       title: `Книга | ${books[idx].title}`,
       book: books[idx],
+      count: cnt
     });
   } else {
     res.redirect('/404');
